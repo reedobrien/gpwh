@@ -13,7 +13,7 @@
 -- Q 6.1 Haskell has a function called repeat that takes a value and repeats it
 -- infinitely. Using the functions you’ve learned so far, implement your own
 -- version of repeat.
-
+repeatit x = cycle [x]
 
 -- -----
 -- Q 6.2 Write a function subseq that takes three arguments: a start position,
@@ -23,7 +23,8 @@
 -- [3,4,5]
 -- GHCi> subseq 2 7 "a puppy"
 -- "puppy"
-
+subseq start stop xs = take remaining (drop start xs)
+    where remaining = stop-start
 
 -- ------
 -- Q 6.3 Write a function inFirstHalf that returns True if an element is in the
