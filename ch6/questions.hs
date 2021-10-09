@@ -2,12 +2,17 @@
 -- You work for a company that has 10,000 employees, and some of them want to
 -- play on an after-work softball team. The company has five teams, named after
 -- colors, which you want to use to assign employees:
+import Data.List
 
--- teams = ["red","yellow","orange","blue","purple"]
+teams = ["red","yellow","orange","blue","purple"]
+employees = [1..100]
 
--- You have a list of employees and you want to match them to the correct team
--- as evenly as possible. What’s a simple way that you can use Haskell’s list
+roster teams employees = sort $ zip teamNames employees
+    where teamNames = cycle teams
+
+-- You have a list of employees and you want to match them to the correct team as evenly as possible. What’s a simple way that you can use Haskell’s list
 -- functions to perform this task?
+
 
 -- ------
 -- Q 6.1 Haskell has a function called repeat that takes a value and repeats it
@@ -29,3 +34,6 @@ subseq start stop xs = take remaining (drop start xs)
 -- ------
 -- Q 6.3 Write a function inFirstHalf that returns True if an element is in the
 -- first half of a list, and otherwise returns False.
+inFirstHalf x xs = elem x firstHalf
+    where halfLen = length xs `div` 2
+          firstHalf = take halfLen xs
