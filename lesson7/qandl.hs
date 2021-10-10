@@ -1,9 +1,10 @@
 -- Consider this:
 -- In the preceding lesson, you learned the function take, which allows you to
 -- take n elements from a list:
-myTake n _ -- less than 1 == []
-    | n<= 0 = []
+-- myTake n _ -- less than 1 == []
+--     | n<= 0 = []
 myTake _ [] = [] -- empty list == empty list
+myTake 0 _ = []
 myTake n (x:xs) = x : myTake (n-1) xs -- recursive take using pattern matching
 
 -- listing 7.1
