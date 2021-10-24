@@ -96,4 +96,12 @@ p w
 -- application to create a closure for the fight method so the fourth robot can
 -- fight all three robots at once, using map. Finally, use map to get the
 -- remaining life from the rest of the robots.
+r1 = robot ("a", 15, 100)
+r2 = robot ("b", 20, 80)
+r3 = robot ("c", 20, 300)
+r4 = robot ("d", 35, 90)
 
+fightAll = fight r4 -- Partial application closure
+
+outcome = map fightAll [r1, r2, r3] -- map fight the 3 bots.
+remainingLife = map printRobot outcome
