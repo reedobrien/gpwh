@@ -81,7 +81,7 @@ data IceCreamReverse = Vanilla1 | Chocolate1
 True
 *Main> Chocolate<Vanilla
 True
-*Main> 
+*Main>
 -}
 
 {-
@@ -89,7 +89,10 @@ Q13.1 If you ran the :info examples, you likely noticed that the type Word has
 come up a few times. Without looking at external resources, use :info to
 explore Word and the relevant type classes to come up with your own explanation
 for the Word type. How is it different from Int?
+
+It has a max bound ~twice an Int. So it looks like an unsigned Int.
 -}
+
 
 {-
 Q13.2 One type class we didn’t discuss is Enum. Use :info to look at the
@@ -102,7 +105,14 @@ inc x = x + 1
 
 and the succ function required by Enum, what’s the difference between inc and
 succ for Int?
+
+inc only works on Ints, succ would work on any type that is Enum-erable.
+Also succ will raise exception if it is called on maxBound :: Int.
+inc will overflow to -(2^32).
+
 -}
+inc' :: Int -> Int
+inc' x = x + 1
 
 {-
 Q13.3 Write the following function that works just like succ on Bounded types
@@ -117,3 +127,13 @@ Your definition will include functions/values from Bounded, Enum, and the
 mystery type class. Make a note of where each of these three (or more)
 functions/values comes from.
 -}
+
+cycleSucc :: (Bounded a, Enum a, Eq a) => a -> a
+cycleSucc n = if n == maxBound -- (==) here means we need Eq Constraint
+              then minBound
+              else succ n
+
+-- *Main> cycleSucc '\1114111'
+-- '\NUL'
+
+
