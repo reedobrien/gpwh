@@ -78,7 +78,7 @@ patient3BT = BloodType AB Pos
 -- Listing 12.8. Displaying your types: showRh, showABO, showBloodType
 showRh :: RhType -> String
 showRh Pos = "+"
-showRh Neg = "="
+showRh Neg = "-"
 
 showABO :: ABOType -> String
 showABO A  = "A"
@@ -158,6 +158,8 @@ jackieSmithUpdated =  jackieSmith { age = 34 }
 
 -- Q12.1 Write a function similar to canDonateTo that takes two patients as
 -- arguments rather than two BloodTypes.
+canDonateToV2 :: Patient -> Patient -> Bool
+canDonateToV2 p1 p2 = canDonateTo (bloodType p1) (bloodType p2)
 
 -- Q12.2 Implement a patientSummary function that uses your final Patient type.
 -- patient-Summary should output a string that looks like this:
@@ -171,3 +173,23 @@ Weight: 210 lbs.
 Blood Type: AB+
 **************
 -}
+showSex :: Sex -> String
+showSex Female = "Female"
+showSex Male = "Male"
+
+showLastNameFirst :: Name -> String
+showLastNameFirst (Name f l) = l ++ ", " ++ f
+showLastNameFirst (NameWithMiddle f m l) = l ++ ", " ++
+                                           f ++ " " ++
+                                           m ++ "."
+
+showPatient :: Patient -> String
+showPatient p = "**************\n" ++
+                "Patient Name: " ++ showLastNameFirst (name p) ++ "\n" ++
+                "Sex: " ++ showSex (sex p) ++ "\n" ++
+                "Age: " ++ show (age p)  ++ "\n" ++
+                "Height: " ++ show (height p) ++ "in.\n" ++
+                "Weight: " ++ show (weight p) ++ "lbs.\n" ++
+                "BloodType: " ++ showBloodType (bloodType p) ++ "\n" ++
+                "**************\n"
+
