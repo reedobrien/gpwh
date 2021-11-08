@@ -215,7 +215,6 @@ streamCipher' plaintext a b max iv  = map (\pair -> (fst pair) `xor` (snd pair))
 genRandom :: Int -> Int -> Int -> Int -> [Bits]
 genRandom a b max iv = map intToBits (genInts' a b max iv)
 
-
 -- genInts' creates a list of integers.
 genInts' :: Int -> Int -> Int -> Int -> [Int] 
 genInts' a b max iv = if max == 0
