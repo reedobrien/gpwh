@@ -213,8 +213,11 @@ streamCipher' plaintext a b max seed  = map (\pair -> (fst pair) `xor` (snd pair
 streamCipher :: String -> Int -> Int -> Int -> Int -> String
 streamCipher plaintext a b n seed = map bitsToChar (streamCipher' plaintext a b n seed)
 
+-- StreamCipher is a data type constructed with a constructor of the same name
+-- which takes 4 integers.
 data StreamCipher = StreamCipher Int Int Int Int
 
+-- Define a stream cipher instance of Cipher.
 instance Cipher StreamCipher where
     encode (StreamCipher a b max seed) text = streamCipher text a b max seed
     decode = encode
