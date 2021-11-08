@@ -190,16 +190,18 @@ examplePRNG = prng 1337 7 100
 -- can be an instance of the Cipher class. Remember: never use your own crypto
 -- in the real world! Assume that this should be used for passing notes only.
 
--- genInts' creates a list of integers.
-genInts' :: Int -> Int -> Int -> Int -> [Int] 
-genInts' a b max iv = if max == 0
-                      then []
-                      else iv : genInts' a b (max-1) s
-    where s = prng a b max iv
+-- Define a stream cipher instance of Cipher.
+instance Cipher StreamCipher where
+    encode (StreamCipher a b max seed) text = streamCipher text a b max seed
+    decode = encode
 
--- genRandom converts getnInts' output into Bits.
-genRandom :: Int -> Int -> Int -> Int -> [Bits]
-genRandom a b max iv = map intToBits (genInts' a b max iv)
+-- StreamCipher is a data type constructed with a constructor of the same name
+-- which takes 4 integers.
+data StreamCipher = StreamCipher Int Int Int Int
+--
+-- streamCipher encodes/decodes text using streamCipher'
+streamCipher :: String -> Int -> Int -> Int -> Int -> String
+streamCipher plaintext a b n seed = map bitsToChar (streamCipher' plaintext a b n seed)
 
 -- streamCipher' is a helper function that encodes/decodes text into a list of bits
 streamCipher' :: String -> Int -> Int -> Int -> Int -> [Bits]
@@ -209,19 +211,19 @@ streamCipher' plaintext a b max seed  = map (\pair -> (fst pair) `xor` (snd pair
         plaintextBits = map charToBits plaintext
         streamBits = genRandom a b max seed
 
--- streamCipher encodes/decodes text using streamCipher'
-streamCipher :: String -> Int -> Int -> Int -> Int -> String
-streamCipher plaintext a b n seed = map bitsToChar (streamCipher' plaintext a b n seed)
+-- genRandom converts getnInts' output into Bits.
+genRandom :: Int -> Int -> Int -> Int -> [Bits]
+genRandom a b max iv = map intToBits (genInts' a b max iv)
 
--- StreamCipher is a data type constructed with a constructor of the same name
--- which takes 4 integers.
-data StreamCipher = StreamCipher Int Int Int Int
 
--- Define a stream cipher instance of Cipher.
-instance Cipher StreamCipher where
-    encode (StreamCipher a b max seed) text = streamCipher text a b max seed
-    decode = encode
+-- genInts' creates a list of integers.
+genInts' :: Int -> Int -> Int -> Int -> [Int] 
+genInts' a b max iv = if max == 0
+                      then []
+                      else iv : genInts' a b (max-1) s
+    where s = prng a b max iv
 
+-- Usage 
 -- sc = StreamCipher 1337 7 100 987203
 -- encode sc "Haskell"
 -- "\987147scHU[`"
