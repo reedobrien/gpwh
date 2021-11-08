@@ -192,7 +192,7 @@ examplePRNG = prng 1337 7 100
 
 -- Define a stream cipher instance of Cipher.
 instance Cipher StreamCipher where
-    encode (StreamCipher a b max seed) text = streamCipher text a b max seed
+    encode (StreamCipher a b max iv) text = streamCipher text a b max iv
     decode = encode
 
 -- StreamCipher is a data type constructed with a constructor of the same name
@@ -201,15 +201,15 @@ data StreamCipher = StreamCipher Int Int Int Int
 --
 -- streamCipher encodes/decodes text using streamCipher'
 streamCipher :: String -> Int -> Int -> Int -> Int -> String
-streamCipher plaintext a b n seed = map bitsToChar (streamCipher' plaintext a b n seed)
+streamCipher plaintext a b n iv = map bitsToChar (streamCipher' plaintext a b n iv)
 
 -- streamCipher' is a helper function that encodes/decodes text into a list of bits
 streamCipher' :: String -> Int -> Int -> Int -> Int -> [Bits]
-streamCipher' plaintext a b max seed  = map (\pair -> (fst pair) `xor` (snd pair))
+streamCipher' plaintext a b max iv  = map (\pair -> (fst pair) `xor` (snd pair))
                                           (zip streamBits plaintextBits)
     where
         plaintextBits = map charToBits plaintext
-        streamBits = genRandom a b max seed
+        streamBits = genRandom a b max iv
 
 -- genRandom converts getnInts' output into Bits.
 genRandom :: Int -> Int -> Int -> Int -> [Bits]
