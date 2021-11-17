@@ -105,33 +105,48 @@ data VinylRecord = VinylRecord {
 } deriving Show
 
 -- Listing 16.18. A StoreItem type is either a Book or a VinylRecord
--- data StoreItem = BookItem Book
---     | RecordItem VinylRecord
---     | ToyItem CollectibleToy
---     | PamphletItem Pamphlet
+data StoreItem =  BookItem Book
+    | RecordItem VinylRecord
+    | ToyItem CollectibleToy
+    | PamphletItem Pamphlet
+    deriving Show
 
 -- Listing 16.19. Adding a CollectibleToy type
--- data CollectibleToy = CollectibleToy {
---         name     :: String
---     ,   toyDesc  :: String
---     ,   toyPrice :: Double
--- }
+data CollectibleToy = CollectibleToy {
+        name     :: String
+    ,   toyDesc  :: String
+    ,   toyPrice :: Double
+} deriving Show
+
+
+aBook = BookItem (
+    Book (
+        AuthorCreator (
+            Author (
+                Name "Reed" "O'Brien"
+                )
+            )
+        ) "123dr" "Two Billion Heartbeats" 2043 33.99)
+anLP = RecordItem (VinylRecord (ArtistCreator (Person (Name "Reed" "O'Brien"))) "ECG" 2021 15.33)
+aToy = ToyItem (CollectibleToy "FunThing" "A very fun thing." 9.99)
+aPam = PamphletItem (Pamphlet (Contact (NameWithMiddle "Reed" "L" "O'Brien")) "The Joy of Types" "Stuff about types" 0.00)
 
 -- Listing 16.21. An example of using the StoreItem type with a price function
--- price :: StoreItem -> Double
--- price (BookItem     book)     = bookPrice book
--- price (RecordItem   record)   = recordPrice record
--- price (ToyItem      toy)      = toyPrice toy
--- price (PamphletItem pamphlet) = pamphletPrice pamphlet
+price :: StoreItem -> Double
+price (BookItem     book)     = bookPrice book
+price (RecordItem   record)   = recordPrice record
+price (ToyItem      toy)      = toyPrice toy
+price (PamphletItem pamphlet) = pamphletPrice pamphlet
 
 -- QUICK CHECK 16.3
 -- Q1: Assume that Creator is an instance of Show. Write a madeBy function that
 -- has the type StoreItem -> String and does its best to determine who made the
 -- StoreItem.
--- madeBy :: StoreItem -> String
--- madeBy (BookItem book)     = show (author book)
--- madeBy (RecordItem record) = show (artist record)
--- madeBy _                   = "unknown"
+madeBy :: StoreItem -> String
+madeBy (BookItem book)         = show (author book)
+madeBy (RecordItem record)     = show (artist record)
+madeBy (PamphletItem pamphlet) = show (contact pamphlet)
+madeBy _                       = "unknown"
 
 -- Q16.1
 -- To further complicate the items in your store, you eventually keep an
@@ -140,14 +155,14 @@ data VinylRecord = VinylRecord {
 -- Pamphlet type and add it to StoreItem. Additionally, modify the price so
 -- that it works with Pamphlet.
 
--- data Contact = Contact Name
+data Contact = Contact Name deriving Show
 
--- data Pamphlet = Pamphlet {
---         contact       :: Contact
---     -- ,   title         :: String
---     -- ,   pamphletDesc  :: String
---     -- ,   pamphletPrice :: Double
--- }
+data Pamphlet = Pamphlet {
+        contact       :: Contact
+    ,   title         :: String
+    ,   pamphletDesc  :: String
+    ,   pamphletPrice :: Double
+} deriving Show
 
 -- Q16.2
 -- Create a Shape type that includes the following shapes: Circle,
