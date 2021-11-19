@@ -168,3 +168,25 @@ data Pamphlet = Pamphlet {
 -- Create a Shape type that includes the following shapes: Circle,
 -- Square, and Rectangle. Then write a function to compute the perimeter of
 -- a Shape as well as its area.
+data Circle = Circle { radius :: Double } deriving Show
+
+data Square = Square { side :: Double } deriving Show
+
+data Rectangle = Rectangle { long :: Double, short :: Double } deriving Show
+
+data Shape = SquareShape Square | CircleShape Circle | RectangleShape Rectangle
+    deriving Show
+
+area :: Shape -> Double
+area (SquareShape square) = side square * side square
+area (CircleShape circle) = pi * radius circle ^2
+area (RectangleShape rectangle) = short rectangle * long rectangle
+
+perimeter :: Shape -> Double
+perimeter (SquareShape square) = 2 * (side square + side square)
+perimeter (CircleShape circle) = 2 * pi * radius circle
+perimeter (RectangleShape rectangle) = 2 * (long rectangle + short rectangle)
+
+s = SquareShape (Square 3)
+c = CircleShape (Circle 3)
+r = RectangleShape (Rectangle 4 3)
