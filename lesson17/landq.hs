@@ -93,3 +93,64 @@ howMuch n | n > 10 = "A whole bunch"
 -- "does this make sense?"
 
 -- mconcat = foldr mappend mempty
+
+-- Listing 17.8. Type synonyms for Events and Probs
+type Events = [String]
+type Probs  = [Double]
+
+-- Listing 17.9. PTable data type
+data PTable = PTable Events Probs
+
+-- Listing 17.10. createPTable makes a PTable ensuring all probabilities sum to
+-- 1
+createPTable :: Events -> Probs -> PTable
+createPTable events probs = PTable events normalizedProbs
+    where totalProbs = sum probs
+          normalizedProbs = map (\x -> x/totalProbs) probs
+
+-- Listing 17.11. showPair creates a String for a single event-probability pair
+showPair :: String -> Double -> String
+showPair event prob = mconcat [event, "|", show prob, "\n"]
+
+-- Listing 17.12. Making PTable an instance of Show
+instance Show PTable where
+    show (PTable events probs) = mconcat pairs
+        where pairs = zipWith showPair events probs
+
+-- Listing 17.13. The cartCombine function for the Cartesian product of lists
+cartCombine :: (a -> b ->c) -> [a] -> [b] -> [c]
+cartCombine func l1 l2 = zipWith func newL1 cycledL2
+    where nToAdd = length l2
+          repeatedL1 = map (take nToAdd . repeat) l1
+          newL1      = mconcat repeatedL1
+          cycledL2   = cycle l2
+
+-- Listing 17.14. combineEvents and combineProbs
+combineEvents :: Events -> Events -> Events
+combineEvents e1 e2 = cartCombine combiner e1 e2
+    where combiner = (\x y -> mconcat [x,"-",y])
+
+combineProbs :: Probs -> Probs -> Probs
+combineProbs p1 p2 = cartCombine (*) p1 p2
+
+-- Listing 17.15. Making PTable an instance of Semigroup
+instance Semigroup PTable where
+    (<>) ptable1 (PTable [] []) = ptable1
+    (<>) (PTable [] []) ptable1 = ptable1
+    (<>) (PTable e1 p1) (PTable e2 p2) = createPTable newEvents newProbs
+        where newEvents = combineEvents e1 e2
+              newProbs  = combineProbs  p1 p2
+
+-- Listing 17.16. Making PTable an instance of Monoid
+instance Monoid PTable where
+    mempty =  PTable [] []
+    mappend = (<>)
+
+-- Listing 17.17. Example PTables coin and spinner
+coin :: PTable
+coin = createPTable ["heads","tails"] [0.5,0.5]
+
+spinner :: PTable
+spinner = createPTable ["red","blue","green"] [0.1,0.2,0.7]
+
+
