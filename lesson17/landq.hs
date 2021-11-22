@@ -47,11 +47,14 @@ data Color = Red
     | Green
     | Purple
     | Orange
-    | Brown deriving (Show, Eq)
+    | Brown
+    | Clear deriving (Show, Eq) -- q17.1
 
 -- Listing 17.4. Implementing Semigroup for Color v1
 -- Listing 17.5 Reimplementing Semigroup for color to support associativity.
 instance Semigroup Color where
+    (<>) Clear any = any -- q17.1
+    (<>) any Clear = any -- q17.1
     (<>) Red Blue = Purple
     (<>) Blue Red = Purple
     (<>) Yellow Blue = Green
@@ -63,6 +66,7 @@ instance Semigroup Color where
              | all (`elem` [Blue, Yellow, Green]) [a,b] = Green
              | all (`elem` [Red, Yellow, Orange]) [a,b] = Orange
              | otherwise = Brown
+
 
 -- Figure 17.1 Using guards in howMuch
 howMuch :: Int -> String
@@ -95,8 +99,11 @@ howMuch n | n > 10 = "A whole bunch"
 -- mconcat = foldr mappend mempty
 
 -- Listing 17.8. Type synonyms for Events and Probs
-type Events = [String]
-type Probs  = [Double]
+-- OBE q 17.2
+-- type Events = [String]
+-- type Probs  = [Double]
+data Events = Events [String]
+data Probs  = Probs [Double]
 
 -- Listing 17.9. PTable data type
 data PTable = PTable Events Probs
@@ -126,12 +133,13 @@ cartCombine func l1 l2 = zipWith func newL1 cycledL2
           cycledL2   = cycle l2
 
 -- Listing 17.14. combineEvents and combineProbs
-combineEvents :: Events -> Events -> Events
-combineEvents e1 e2 = cartCombine combiner e1 e2
-    where combiner = (\x y -> mconcat [x,"-",y])
+-- OBE -> q 17.2
+-- combineEvents :: Events -> Events -> Events
+-- combineEvents e1 e2 = cartCombine combiner e1 e2
+--     where combiner = (\x y -> mconcat [x,"-",y])
 
-combineProbs :: Probs -> Probs -> Probs
-combineProbs p1 p2 = cartCombine (*) p1 p2
+-- combineProbs :: Probs -> Probs -> Probs
+-- combineProbs p1 p2 = cartCombine (*) p1 p2
 
 -- Listing 17.15. Making PTable an instance of Semigroup
 instance Semigroup PTable where
@@ -153,4 +161,36 @@ coin = createPTable ["heads","tails"] [0.5,0.5]
 spinner :: PTable
 spinner = createPTable ["red","blue","green"] [0.1,0.2,0.7]
 
+-- Q17.1 Your current implementation of Color doesn’t contain an identity
+-- element. Modify the code in this unit so that Color does have an identity
+-- element, and then make Color an instance of Monoid.
+instance Monoid Color where
+    mempty        = Clear
+    mappend c1 c2 = c1 <> c2
+-- See also changes to instance and data earlier in the file.
 
+-- Q17.2 If your Events and Probs types were data types and not just synonyms,
+-- you could make them instances of Semigroup and Monoid, where combineEvents
+-- and combineProbs were the <> operator in each case. Refactor these types and
+-- make instances of Semigroup and Monoid.
+
+combineEvents :: Events->Events->Events
+combineEvents (Events e1) (Events e2) = Events (cartCombine combiner e1 e2)
+    where combiner (\x y -> mconcat [x, "-", y]
+
+instance Semigroup Events where
+    (<>) = combineEvents
+
+instance Monoid Events where
+    mappend = (<>)
+    mempty  = Events []
+
+combineProbs :: Probs->Probs-> Probs
+combineProbs (Probs p1) (Probs p2) = Probs (cartCombine (*) p1 p2)
+
+instance Semigroup Probs where
+    (<>) = combineProbs
+
+instance Monoid Probs where
+    mappend = (<>)
+    mempty  = Probs []
