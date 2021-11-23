@@ -127,7 +127,7 @@ itemInventory = [itemCount1, itemCount2, itemCount3]
 data Organ = Heart
         | Brain
         | Kidney
-        | Spleen deriving Show
+        | Spleen deriving (Eq, Enum, Ord, Show)
 
 -- Listing 18.16. An example list of organs
 organs :: [Organ]
@@ -152,5 +152,32 @@ organCatalog :: Map.Map Int Organ
 organCatalog = Map.fromList organPairs
 
 -- Listing 18.21. The type signature for Map.lookup
-Map.lookup :: Ord k => k -> Map.Map k a -> Maybe a
+-- Map.lookup :: Ord k => k -> Map.Map k a -> Maybe a
 
+-- Q18.1 For the types Triple and Box, implement a function similar to map,
+-- tripleMap, and boxMap.
+boxMap :: (a -> b) -> Box a -> Box b
+boxMap f (Box x) = Box (f x)
+-- boxMap show (Box 100)
+-- Box "100"
+
+tripleMap :: (a -> b) -> Triple a -> Triple b
+tripleMap f (Triple x y z) = Triple (f x) (f y) (f z)
+-- tripleMap show (Triple 1 2 3)
+-- Triple "1" "2" "3"
+
+-- Q18.2 Modify the Organ type so that it can be used as a key. Then build
+-- a Map, organ-Inventory, of each organ to its count in the organCatalog.
+-- Add Ord, Eq, Enum to Organ definition.
+values :: [Organ]
+values = map snd (Map.toList organCatalog)
+
+allOrgans :: [Organ]
+allOrgans = [Heart .. Spleen]
+
+organCounts :: [Int]
+organCounts = map countOrgan allOrgans
+    where countOrgan = (\o -> (length . filter (== o)) values)
+
+organInventory ::  Map.Map Organ Int
+organInventory = Map.fromList (zip allOrgans organCounts)
