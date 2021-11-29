@@ -13,6 +13,7 @@
 -- determine what to do for a default value, or if the lack of a value is an
 -- error.
 import Data.List
+import Data.Maybe
 import qualified Data.Map as Map
 
 data Organ =  Heart
@@ -140,5 +141,18 @@ processRequest id catalog = report (process organ) -- processAndReport organ
     where organ = Map.lookup id catalog
 
 
+
+-- Q19.1 Write a function emptyDrawers that takes the output of getDrawerContents
+-- and tells you the number of drawers that are empty.
+-- getDrawerContents :: [Int] -> Map.Map Int Organ -> [Maybe Organ]
+-- getDrawerContents ids catalog = map getContents ids
+--     where getContents = \id -> Map.lookup id catalog
+emptyDrawers :: [Maybe Organ] -> Int
+emptyDrawers cabinet = (length . filter isNothing) cabinet
+
+-- Q19.2 Write a version of map that works for Maybe types, called maybeMap.
+maybeMap :: (a->b) -> Maybe a -> Maybe b
+maybeMap func Nothing = Nothing
+maybeMap func (Just val) = Just (func val)
 
 
