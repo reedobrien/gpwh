@@ -93,3 +93,52 @@ cleanList = intercalate ", " organList
 numOrZero :: Maybe Int -> Int
 numOrZero (Just i) = i
 numOrZero Nothing = 0
+
+data Container = Vat Organ | Cooler Organ | Bag Organ
+
+instance Show Container where
+    show (Vat organ) = show organ ++ " in a vat"
+    show (Cooler organ) = show organ ++ " in a cooler"
+    show (Bag organ) = show organ ++ " in a bag"
+
+data Location = Lab | Kitchen | Bathroom deriving Show
+
+organToContainer :: Organ -> Container
+organToContainer Brain = Vat Brain
+organToContainer Heart = Cooler Heart
+organToContainer organ = Bag organ
+
+placeInLocation :: Container -> (Location, Container)
+placeInLocation (Vat a) = (Lab, Vat a)
+placeInLocation (Cooler a) = (Lab, Cooler a)
+placeInLocation (Bag a) = (Kitchen, Bag a)
+
+-- Listing 19.11. The core functions process and report
+process :: (Maybe Organ) -> Maybe (Location, Container)
+process Nothing = Nothing
+process (Just organ) = Just (placeInLocation (organToContainer organ))
+
+--Listing 19.11 and QC 19.3 How would you rewrite report so that it works with
+-- Maybe (Location, Container) and handles the case of the missing Organ?
+report :: Maybe (Location, Container) -> String
+report Nothing = "error, organ or container not found"
+report (Just (location, container)) = show container ++ " in the " ++ show location
+
+-- Listing 19.12. Ideal definition of processRequest (won’t compile)
+-- processRequest :: Int -> Map.Map Int Organ -> String
+-- processRequest id catalog = report (process organ)
+--     where organ = Map.lookup id catalog
+
+-- Listing 19.13. processAndReport to handle the Maybe Organ data
+-- processAndReport :: (Maybe Organ) -> String
+-- processAndReport (Just organ) = report (process organ)
+-- processAndReport Nothing = "error, ID not found"
+
+-- Listing 19.14. processRequest with support for Maybe Organ
+processRequest :: Int -> Map.Map Int Organ -> String
+processRequest id catalog = report (process organ) -- processAndReport organ
+    where organ = Map.lookup id catalog
+
+
+
+
