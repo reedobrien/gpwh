@@ -117,7 +117,7 @@ makeTSCompare func = newFunc
     where newFunc (i1, Nothing) (i2, Nothing) = (i1, Nothing)
           newFunc (_, Nothing) (i, val) = (i, val)
           newFunc (i, val) (_, Nothing) = (i, val)
-          newFunc (i1, Just val1) (i2, Just val2) = 
+          newFunc (i1, Just val1) (i2, Just val2) =
                 if func val1 val2 == val1
                 then (i1, Just val1)
                 else (i2, Just val2)
@@ -137,3 +137,40 @@ minTS = compareTS min
 
 maxTS :: Ord a => TS a -> Maybe (Int, Maybe a)
 maxTS = compareTS max
+
+-- Listing 20.18. Type signature of diffPair
+diffPair :: Num a => Maybe a -> Maybe a -> Maybe a
+diffPair Nothing _ = Nothing
+diffPair _ Nothing = Nothing
+diffPair (Just x) (Just y) = Just (x - y)
+
+-- Listing 20.20. diffTS to take the diff of a TS
+diffTS :: Num a => TS a -> TS a
+diffTS (TS [] []) = TS [] []
+diffTS (TS times values) = TS times (Nothing:diffValues)
+    where shiftValues = tail values
+          diffValues = zipWith diffPair shiftValues values
+
+-- Listing 20.21. meanMaybe, which takes the mean of a list of Maybe a values
+meanMaybe :: (Real a) => [Maybe a] -> Maybe Double
+meanMaybe vals = if any (== Nothing) vals
+                 then Nothing
+                 else (Just avg)
+    where avg = mean (map fromJust vals)
+
+-- Listing 20.22. movingAvg calculates the moving average of a Maybe a list
+movingAvg :: (Real a) => [Maybe a] -> Int -> [Maybe Double]
+movingAvg [] n = []
+movingAvg vals n = if length nextVals == n
+                   then meanMaybe nextVals:movingAvg restVals n
+                   else []
+    where nextVals = take n vals
+          restVals = tail vals
+
+-- Listing 20.23. maTS for calculating the moving average of a TS with centering
+movingAverageTS :: (Real a) => TS a -> Int -> TS Double
+movingAverageTS (TS [] []) n = TS [] []
+movingAverageTS (TS times values) n = TS times smoothedValues
+    where ma = movingAvg values n
+          nothings = replicate (n `div` 2) Nothing
+          smoothedValues = mconcat [nothings, ma, nothings]
