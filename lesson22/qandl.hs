@@ -1,3 +1,5 @@
+import Data.List
+
 -- CONSIDER THIS
 -- You want to write a program that will let a user test whether words are
 -- palindromes. This is easy for a single word, but how can you let the user
@@ -25,3 +27,10 @@
 
 myReplicateM :: Monad m => Int -> m a -> m [a]
 myReplicateM n func = mapM (\_ -> func) [1 .. n]
+
+-- Listing 22.9 Defining myLines with splitOn from Data.List.Split
+-- myLines = splitOn "\n"
+
+-- Listing 22.10. toInts function to convert your Char list into a list of Ints
+toInts :: String -> [Int]
+toInts = map read . lines
